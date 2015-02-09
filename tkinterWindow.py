@@ -26,6 +26,10 @@ class MainWindow(tk.Frame):
         self.pack_propagate(0)
         # We will use the flexible pack layout manager
         self.pack()
+        # Text Labels
+        self.result_label = None
+        self.weather_matrix = None
+        self.logo_label = tk.Label(text='Yerago Personal Color System \n Copyright (c) Yerago 2015 All rights reserved')
         # Filedialog
         self.open_button = tk.Button(self,
                                      text='이미지 파일 열기 (jpg, jpeg, png 형식만 가능)',
@@ -37,6 +41,7 @@ class MainWindow(tk.Frame):
         # Put the controls on the form
         self.open_button.pack(fill=tk.X, side=tk.TOP)
         self.analyze_button.pack(fill=tk.X, side=tk.TOP)
+        self.logo_label.pack(side=tk.BOTTOM)
         # Open Image's filename
         self.file_name = None
         self.loaded_image = None
@@ -50,20 +55,21 @@ class MainWindow(tk.Frame):
                                                                 ("Jpeg images", "*.jpeg")))
         print(self.file_name, 'is loaded.')
         # load image and resize (PIL side), output: (resize)image
-        image = Image.open(self.file_name)
-        basewidth = 380
-        wpercent = (basewidth/float(image.size[0]))
-        hsize = int((float(image.size[1])*float(wpercent)))
-        image = image.resize((basewidth, hsize), Image.ANTIALIAS)
+        if self.file_name:
+            image = Image.open(self.file_name)
+            basewidth = 380
+            wpercent = (basewidth/float(image.size[0]))
+            hsize = int((float(image.size[1])*float(wpercent)))
+            image = image.resize((basewidth, hsize), Image.ANTIALIAS)
 
-        # load image for Tkinter
-        photo = ImageTk.PhotoImage(image)
-        if self.loaded_image:
-            # 한 번에 하나씩만 이미지가 올라오도록 (Garbage Collection)
-            self.loaded_image.destroy()
-        self.loaded_image = Label(image=photo)
-        self.loaded_image.image = photo
-        self.loaded_image.pack()
+            # load image for Tkinter
+            photo = ImageTk.PhotoImage(image)
+            if self.loaded_image:
+                # 한 번에 하나씩만 이미지가 올라오도록 (Garbage Collection)
+                self.loaded_image.destroy()
+            self.loaded_image = Label(image=photo)
+            self.loaded_image.image = photo
+            self.loaded_image.pack()
 
     def analyze(self):
         '''
@@ -76,11 +82,29 @@ class MainWindow(tk.Frame):
             print("Exception Error Occurred! Please contact Manager (jaehyunahn@sogang.ac.kr).")
         else:
             if self.file_name is not None:
+                if self.result_label is not None:
+                    self.result_label.destroy()
+                    self.weather_matrix.destroy()
                 # Do analyze!
                 print('%s will be analyzed.' % self.file_name)
                 (weather, personal_color_array) = face_detect(self.file_name)
+                # Print out result
+
                 print('weather is %s' % weather)
                 print('weather matrix ', personal_color_array)
+                weather += ' 형 얼굴입니다.'
+                self.result_label = Label(text=weather)
+
+                # print our weather matrix
+                total = float(sum(personal_color_array))
+                weather_destribution = '봄: %0.2f%% ' % (float(personal_color_array[0])/total)
+                weather_destribution += '여름: %0.2f%% ' % (float(personal_color_array[1]/total))
+                weather_destribution += '가을: %0.2f%% ' % (float(personal_color_array[2]/total))
+                weather_destribution += '겨울: %0.2f%% ' % (float(personal_color_array[3]/total))
+                # Pack and print out
+                self.weather_matrix = Label(text=weather_destribution)
+                self.result_label.pack(side=tk.BOTTOM)
+                self.weather_matrix.pack(side=tk.BOTTOM)
             else:
                 print("There's no exception occurred.")
     def run(self):
