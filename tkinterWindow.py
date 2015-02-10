@@ -92,15 +92,14 @@ class MainWindow(tk.Frame):
 
                 print('weather is %s' % weather)
                 print('weather matrix ', personal_color_array)
-                weather += ' 형 얼굴입니다.'
                 self.result_label = Label(text=weather)
 
                 # print our weather matrix
                 total = float(sum(personal_color_array))
-                weather_destribution = '봄: %0.2f%% ' % (float(personal_color_array[0])/total)
-                weather_destribution += '여름: %0.2f%% ' % (float(personal_color_array[1]/total))
-                weather_destribution += '가을: %0.2f%% ' % (float(personal_color_array[2]/total))
-                weather_destribution += '겨울: %0.2f%% ' % (float(personal_color_array[3]/total))
+                weather_destribution = '봄: %0.2f%% ' % ((float(personal_color_array[0])/total)*100)
+                weather_destribution += '여름: %0.2f%% ' % ((float(personal_color_array[1])/total)*100)
+                weather_destribution += '가을: %0.2f%% ' % ((float(personal_color_array[2])/total)*100)
+                weather_destribution += '겨울: %0.2f%% ' % ((float(personal_color_array[3])/total)*100)
                 # Pack and print out
                 self.weather_matrix = Label(text=weather_destribution)
                 self.result_label.pack(side=tk.BOTTOM)

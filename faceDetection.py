@@ -30,11 +30,15 @@ class faceCandidate():
 # loading classifiers
 def face_detect(file_path):
     image = cv2.imread(file_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    try:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    except:
+        return ('파일을 읽지 못했습니다.', [1, 1, 1, 1])
     faces = haar_face_detection(gray, 5)
     # read image
     if len(faces) <= 0:
         print("We cannot found face in %s." % file_path)
+        return ('얼굴을 인식하지 못했습니다. 다른 사진을 올려주세요.', [1, 1, 1, 1])
     else:
         # Found face which has highest <y> coordinate
         mainCandidate = faceCandidate()
@@ -61,10 +65,10 @@ def face_detect(file_path):
             personal_color = weather_score.index(max(weather_score))
             print(weather_score)
             if personal_color is 0:
-                return ('Spring', weather_score)
+                return ("'봄'형 피부색 입니다.", weather_score)
             elif personal_color is 1:
-                return ('Summer', weather_score)
+                return ("'여름'형 피부색 입니다.", weather_score)
             elif personal_color is 2:
-                return ('Autumn', weather_score)
+                return ("'가을'형 피부색 입니다.", weather_score)
             else:
-                return ('Winter', weather_score)
+                return ("'겨울'형 피부색 입니다.", weather_score)
